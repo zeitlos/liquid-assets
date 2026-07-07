@@ -53,27 +53,44 @@ No hand-waving — and no heavy dependencies (the linear algebra is hand-rolled,
 
 ## Architecture
 
+Two independently deployable services:
+
+```
+                    ┌─────────────────────────┐         ┌──────────────────────────┐
+   browser  ─────►  │  frontend (Node/Express) │  ─/api─►│  backend (FastAPI)       │
+   :3000            │  serves the SPA +        │  proxy  │  the Œnometric Engine    │
+                    │  reverse-proxies /api    │         │  reads/writes DATA_DIR   │
+                    └─────────────────────────┘         └──────────────────────────┘
+```
+
+The browser only ever talks to the **frontend** origin; the Node server forwards `/api` to the
+**backend** over the internal network (server-to-server), so the backend URL is a deploy-time env
+var (`BACKEND_URL`) rather than baked into the bundle, and there is no CORS to manage.
+
 ```
 example-python-fullstack/
-├── backend/                 FastAPI + Pydantic — the Œnometric Engine
+├── backend/                 FastAPI + Pydantic — the Œnometric Engine (API only)
 │   ├── app/
-│   │   ├── main.py          API routes; also serves the built SPA in prod
+│   │   ├── main.py          API routes
 │   │   ├── models.py        Pydantic domain + response models
 │   │   ├── engine.py        Monte Carlo, Cholesky, frontier, drinkability
 │   │   ├── repository.py    Atomic JSON file store (the "database")
 │   │   ├── market.py        Persistent random-walk market feed
 │   │   ├── seed.py          The (tastefully over-the-top) demo cellar
-│   │   └── config.py        DATA_DIR / FRONTEND_DIST via env
+│   │   └── config.py        DATA_DIR / CORS_ORIGINS via env
+│   ├── Dockerfile
 │   └── requirements.txt
 ├── frontend/                React + Vite + TypeScript dashboard
-│   └── src/components/       Hand-rolled SVG charts, no chart library
-├── Dockerfile               Multi-stage: build frontend → serve from Python
-└── Makefile                 install / dev / build / run / docker
+│   ├── server.js            Node/Express: serves dist/ + proxies /api → backend
+│   ├── src/components/       Hand-rolled SVG charts, no chart library
+│   └── Dockerfile           Multi-stage: build with Vite → run the Node server
+├── docker-compose.yml       Runs both services together
+└── Makefile                 install / dev / build / start / up
 ```
 
-In **production** a single Python process serves both the API (`/api/*`) and the built React app
-(everything else) — one container, one port. In **development** the API runs on `:8000` and Vite on
-`:5173`, proxying `/api` across.
+In **development** the backend runs on `:8000` and the Vite dev server on `:5173`, proxying `/api`
+across. In **production** the built SPA is served by the Node server (`:3000`), which proxies `/api`
+to the backend (`:8000`).
 
 ---
 
@@ -97,19 +114,21 @@ cd backend && python3 -m venv .venv && ./.venv/bin/pip install -r requirements.t
 cd frontend && npm install && npm run dev
 ```
 
-### Production (single process)
+### Production-style (two services, locally)
 
 ```bash
-make run              # builds the frontend, then serves everything from FastAPI on :8000
-# → open http://localhost:8000
+make start            # backend API on :8000, Node frontend server on :3000 (proxies /api)
+# → open http://localhost:3000
 ```
 
-### Docker
+### Docker (both services via compose)
 
 ```bash
-make docker-build
-make docker-run       # http://localhost:8000, data persisted in a named volume
+make up               # frontend → http://localhost:3000, backend → http://localhost:8000/docs
 ```
+
+`docker compose` builds both images, wires `BACKEND_URL=http://backend:8000`, and persists the
+cellar in a named volume mounted at the backend's `DATA_DIR`.
 
 ---
 
@@ -135,19 +154,32 @@ Base path `/api`. Full interactive documentation at `/docs`.
 
 ### Configuration
 
+**Backend**
+
 | Env var | Default | Meaning |
 | --- | --- | --- |
 | `DATA_DIR` | `backend/data` | Where the JSON store lives — point at a mounted **volume** in prod |
-| `FRONTEND_DIST` | `frontend/dist` | Built SPA to serve from the API process |
+| `CORS_ORIGINS` | `*` | Comma-separated allowed origins (only matters if a browser calls the API directly) |
 | `PORT` | `8000` | Honoured by the container entrypoint |
+
+**Frontend**
+
+| Env var | Default | Meaning |
+| --- | --- | --- |
+| `BACKEND_URL` | `http://localhost:8000` | Where the Node server proxies `/api` (e.g. the backend's internal service URL) |
+| `PORT` | `3000` | Port the Node server listens on |
 
 ---
 
 ## Deployment
 
-The app has no platform-specific coupling — it's a standard Dockerfile plus a standard Python/Node
-build. Deploy it to anything that runs a container or builds a repo: mount a volume at `DATA_DIR` so
-the cellar survives restarts, and you're done.
+Two standard services, no platform-specific coupling — deploy each to anything that runs a container
+or builds a repo:
+
+- **backend** — build `backend/`, mount a volume at `DATA_DIR` so the cellar survives restarts.
+- **frontend** — build `frontend/`, set `BACKEND_URL` to the backend's (internal) URL, expose its port.
+
+Point the frontend at the backend and you're done.
 
 ---
 

@@ -15,15 +15,11 @@ _REPO_ROOT = Path(__file__).resolve().parents[2]
 # in production; defaults to ./backend/data for local development.
 DATA_DIR = Path(os.environ.get("DATA_DIR", _REPO_ROOT / "backend" / "data"))
 
-# Built React app. When present, the API also serves the single-page frontend,
-# so the whole product ships as one container / one process.
-FRONTEND_DIST = Path(os.environ.get("FRONTEND_DIST", _REPO_ROOT / "frontend" / "dist"))
-
-# Origins allowed to talk to the API during local development (Vite dev server).
-DEV_ORIGINS = [
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-]
+# This backend is API-only. In production the Node frontend server reverse-
+# proxies /api to it (server-to-server, so CORS is not exercised). CORS still
+# matters if a browser calls the API directly — e.g. the Vite dev server, or a
+# frontend build pointed straight at the backend. Comma-separated; "*" = any.
+CORS_ORIGINS = [o.strip() for o in os.environ.get("CORS_ORIGINS", "*").split(",") if o.strip()]
 
 # --- "Market" constants (mock, but plausible) -------------------------------
 # Long-run annualised return of the Liv-ex Fine Wine 100, used as the benchmark

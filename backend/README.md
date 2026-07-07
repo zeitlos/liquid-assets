@@ -21,9 +21,10 @@ State is stored as JSON under `DATA_DIR` (default `./backend/data`):
 - `cellar.json` — the wine portfolio (seeded on first run)
 - `market.json` — the drifting market-index feed
 
-Point `DATA_DIR` at a mounted volume in production. `FRONTEND_DIST` (default
-`../frontend/dist`) tells the API where the built React app lives; when present
-the API serves the SPA from the same process.
+Point `DATA_DIR` at a mounted volume in production. This service is **API-only** —
+the React UI is served by the separate Node.js frontend service, which reverse-
+proxies `/api` here. `CORS_ORIGINS` (default `*`) only matters if a browser calls
+this API directly (e.g. the Vite dev server).
 
 ## Endpoints
 

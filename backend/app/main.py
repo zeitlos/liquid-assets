@@ -1,17 +1,14 @@
-"""FastAPI application.
+"""FastAPI application — the API-only backend service.
 
-Exposes the Œnometric Engine over HTTP and — when a built frontend is present —
-serves the React single-page app from the same process, so the entire product
-is one deployable unit.
+Exposes the Œnometric Engine over HTTP. The React single-page app is served by
+a separate Node.js frontend service, which reverse-proxies /api here.
 """
 
 from __future__ import annotations
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
-from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ValidationError
 
 from . import __version__, config, engine, market, repository
 from .models import (
@@ -38,8 +35,8 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=config.DEV_ORIGINS,
-    allow_credentials=True,
+    allow_origins=config.CORS_ORIGINS,
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -90,7 +87,15 @@ def get_bottle(bottle_id: str) -> BottleAnalytics:
 
 @app.patch("/api/cellar/bottles/{bottle_id}", response_model=Bottle, tags=["cellar"])
 def patch_bottle(bottle_id: str, patch: BottleUpdate) -> Bottle:
-    updated = repository.update_bottle(bottle_id, patch)
+    try:
+        updated = repository.update_bottle(bottle_id, patch)
+    except ValidationError as exc:
+        # The merged bottle is incoherent (e.g. drink_to < drink_from) — this is
+        # a bad request, not a server error.
+        raise HTTPException(
+            status_code=422,
+            detail=[{"loc": list(e["loc"]), "msg": e["msg"], "type": e["type"]} for e in exc.errors()],
+        )
     if updated is None:
         raise HTTPException(status_code=404, detail="Bottle not found")
     return updated
@@ -154,15 +159,13 @@ def market_pulse() -> MarketPulse:
 
 
 # --------------------------------------------------------------------------- #
-# Serve the built React app (production single-process mode)
+# Root — this service is API-only; the UI is served by the Node frontend.
 # --------------------------------------------------------------------------- #
-if config.FRONTEND_DIST.exists():
-    # Anything not matched above falls through to the SPA's index.html.
-    app.mount("/", StaticFiles(directory=str(config.FRONTEND_DIST), html=True), name="spa")
-else:
-    @app.get("/", tags=["meta"])
-    def root() -> dict:
-        return {
-            "message": "Liquid Assets™ API is live. Build the frontend to serve the UI here.",
-            "docs": "/docs",
-        }
+@app.get("/", tags=["meta"])
+def root() -> dict:
+    return {
+        "service": "Liquid Assets™ — Œnometric Engine (API)",
+        "status": "ok",
+        "docs": "/docs",
+        "ui": "served separately by the Node.js frontend service",
+    }

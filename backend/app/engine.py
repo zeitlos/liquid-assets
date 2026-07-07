@@ -248,8 +248,10 @@ def portfolio_metrics(bottles: list[Bottle], year: int | None = None) -> Portfol
     volatility = math.sqrt(max(variance, 0.0))
 
     # Concentration (Herfindahl over region weights) → diversification score.
+    # HHI is only meaningful when the weights sum to 1; an empty cellar has
+    # zero weights everywhere, so treat it as "not diversified" (0), not 1.
     hhi = sum(w * w for w in weights)
-    diversification = max(0.0, 1.0 - hhi)
+    diversification = 0.0 if total_value <= 0 else max(0.0, 1.0 - hhi)
 
     alpha = exp_return - BENCHMARK_RETURN
     sharpe = (exp_return - RISK_FREE_RATE) / volatility if volatility > 1e-9 else 0.0

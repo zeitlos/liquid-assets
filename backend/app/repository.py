@@ -92,8 +92,19 @@ def update_bottle(bottle_id: str, patch: BottleUpdate) -> Bottle | None:
         for i, b in enumerate(bottles):
             if b.id == bottle_id:
                 data = b.model_dump()
-                data.update(patch.model_dump(exclude_unset=True))
-                # Re-validate through the model (keeps the drinking window coherent).
+                changes = patch.model_dump(exclude_unset=True)
+                data.update(changes)
+                # If the drinking window moved but the apogee wasn't part of the
+                # patch, let the model recentre it rather than failing because the
+                # old apogee now sits outside the new window.
+                if ("drink_from" in changes or "drink_to" in changes) and "apogee_year" not in changes:
+                    lo, hi = data["drink_from"], data["drink_to"]
+                    apogee = data.get("apogee_year")
+                    if apogee is None or not (lo <= apogee <= hi):
+                        data["apogee_year"] = None
+                # Re-validate through the model. Raises pydantic.ValidationError on
+                # genuinely incoherent input (e.g. drink_to < drink_from); the API
+                # layer turns that into a 422. Nothing is written on failure.
                 updated = Bottle.model_validate(data)
                 bottles[i] = updated
                 _write(bottles)

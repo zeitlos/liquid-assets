@@ -55,14 +55,27 @@ export default function App() {
     setMc(result);
   }, []);
 
-  // Initial load.
+  // Initial load. Only the core analytics are fatal; the engine simulation and
+  // market feed are non-fatal, so a transient failure there can't pin an error
+  // screen over an otherwise-working dashboard.
   useEffect(() => {
     (async () => {
       try {
         await loadAnalytics();
-        await Promise.all([runSim(10, 5000, 42), api.market().then(setMarket)]);
+        setError(null);
       } catch (e) {
         setError(e instanceof Error ? e.message : "Failed to reach the Œnometric Engine.");
+        return;
+      }
+      try {
+        await runSim(10, 5000, 42);
+      } catch {
+        /* the Run Simulation button stays available */
+      }
+      try {
+        setMarket(await api.market());
+      } catch {
+        /* the ticker simply stays empty */
       }
     })();
   }, [loadAnalytics, runSim]);
@@ -93,7 +106,7 @@ export default function App() {
     <>
       {(!bootDone || !ready) && <BootSequence onComplete={() => setBootDone(true)} />}
 
-      {error && (
+      {error && !ready && (
         <div className="app" style={{ paddingTop: 120, textAlign: "center" }}>
           <div className="panel" style={{ maxWidth: 460, margin: "0 auto" }}>
             <div className="panel-title" style={{ justifyContent: "center" }}>

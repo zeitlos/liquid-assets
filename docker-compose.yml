@@ -1,0 +1,27 @@
+# Runs the two services together locally.
+#   frontend (Node/Express)  →  http://localhost:3000   (the app)
+#   backend  (FastAPI)        →  http://localhost:8000   (API + /docs)
+# The frontend proxies /api to the backend over the internal network.
+
+services:
+  backend:
+    build: ./backend
+    environment:
+      DATA_DIR: /data
+    volumes:
+      - cellar-data:/data
+    ports:
+      - "8000:8000" # exposed only so you can browse /docs; the UI doesn't need it
+
+  frontend:
+    build: ./frontend
+    environment:
+      BACKEND_URL: http://backend:8000
+      PORT: "3000"
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
+volumes:
+  cellar-data:
