@@ -33,7 +33,7 @@ export default function MaturityHorizon({ bottles }: Props) {
   for (let d = Math.ceil(minYear / 10) * 10; d <= maxYear; d += 10) decades.push(d);
 
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} className="chart">
+    <svg viewBox={`0 0 ${W} ${H}`} className="chart" style={{ fontSize: 9 }}>
       {/* decade gridlines */}
       {decades.map((d) => (
         <g key={d}>
@@ -51,9 +51,9 @@ export default function MaturityHorizon({ bottles }: Props) {
         const apogee = r.bottle.apogee_year ?? (r.bottle.drink_from + r.bottle.drink_to) / 2;
         return (
           <g key={r.bottle.id}>
-            <text x={10} y={cy + 3} className="axis-label" fill="#c7ccdb" style={{ fontSize: 10 }}>
+            <text x={10} y={cy + 3} className="axis-label" fill="#c7ccdb">
               {r.bottle.name.length > 24 ? r.bottle.name.slice(0, 23) + "…" : r.bottle.name}
-              <tspan fill="#565e72"> ’{String(r.bottle.vintage).slice(2)}</tspan>
+              <tspan fill="#626a7e"> ’{String(r.bottle.vintage).slice(2)}</tspan>
             </text>
             {/* window bar */}
             <rect
@@ -86,10 +86,10 @@ export default function MaturityHorizon({ bottles }: Props) {
       })}
 
       {/* NOW line */}
-      <line x1={x(now)} x2={x(now)} y1={TOP - 6} y2={H - BOTTOM} stroke="#eccd74" strokeWidth={1.3} strokeDasharray="2 3" />
-      <rect x={x(now) - 17} y={TOP - 18} width={34} height={13} rx={3} fill="#eccd74" />
-      <text x={x(now)} y={TOP - 8} textAnchor="middle" style={{ fontSize: 9, fontWeight: 700 }} fill="#0e111c">
-        NOW
+      <line x1={x(now)} x2={x(now)} y1={TOP - 6} y2={H - BOTTOM} stroke="#e3c473" strokeWidth={1.3} strokeDasharray="2 3" />
+      <rect x={x(now) - 18} y={TOP - 18} width={36} height={13} rx={3} fill="#e3c473" />
+      <text x={x(now)} y={TOP - 8.5} textAnchor="middle" style={{ fontSize: 8.5, fontWeight: 700 }} fill="#0e111c">
+        Now
       </text>
     </svg>
   );

@@ -40,6 +40,7 @@ export default function EfficientFrontier({ ef }: Props) {
       <svg
         viewBox={`0 0 ${W} ${H}`}
         className="chart"
+        style={{ fontSize: 12 }}
         onMouseLeave={() => setHover(null)}
       >
         {/* grid */}
@@ -62,15 +63,16 @@ export default function EfficientFrontier({ ef }: Props) {
             </text>
           );
         })}
-        <text x={M.left + plotW / 2} y={H - 6} textAnchor="middle" className="axis-label">
-          RISK · ANNUALISED VOLATILITY →
+        <text x={M.left + plotW / 2} y={H - 6} textAnchor="middle" className="axis-label" fill="var(--text-faint)">
+          Risk — annualised volatility
         </text>
         <text
-          transform={`translate(14, ${M.top + plotH / 2}) rotate(-90)`}
+          transform={`translate(15, ${M.top + plotH / 2}) rotate(-90)`}
           textAnchor="middle"
           className="axis-label"
+          fill="var(--text-faint)"
         >
-          ← EXPECTED RETURN
+          Expected return
         </text>
 
         {/* random-portfolio cloud */}
@@ -108,13 +110,10 @@ export default function EfficientFrontier({ ef }: Props) {
             })
           }
         >
-          <circle cx={x(ef.cellar.risk)} cy={y(ef.cellar.ret)} r={9} fill="none" stroke="#c0405f" strokeWidth={2}>
-            <animate attributeName="r" values="9;13;9" dur="2.4s" repeatCount="indefinite" />
-            <animate attributeName="stroke-opacity" values="1;0.2;1" dur="2.4s" repeatCount="indefinite" />
-          </circle>
-          <circle cx={x(ef.cellar.risk)} cy={y(ef.cellar.ret)} r={5} fill="#c0405f" />
-          <text x={x(ef.cellar.risk) + 12} y={y(ef.cellar.ret) - 8} className="axis-label" fill="#e8eaf3">
-            YOUR CELLAR
+          <circle cx={x(ef.cellar.risk)} cy={y(ef.cellar.ret)} r={10} fill="none" stroke="#c0405f" strokeWidth={1.5} strokeOpacity={0.5} />
+          <circle cx={x(ef.cellar.risk)} cy={y(ef.cellar.ret)} r={5.5} fill="#c0405f" />
+          <text x={x(ef.cellar.risk) + 14} y={y(ef.cellar.ret) - 9} className="axis-label" fill="#eceef5">
+            Your cellar
           </text>
         </g>
 

@@ -19,7 +19,7 @@ export default function Ticker({ indices }: Props) {
               <span className="sym">{ix.symbol}</span>
               <span className="lvl">{ix.level.toFixed(2)}</span>
               <span className={`arrow ${up ? "pos" : "neg"}`}>{up ? "▲" : "▼"}</span>
-              <span className={up ? "pos mono" : "neg mono"} style={{ fontSize: 11 }}>
+              <span className={up ? "pos mono" : "neg mono"} style={{ fontSize: 12.5 }}>
                 {signedPct(ix.change_pct)}
               </span>
             </span>

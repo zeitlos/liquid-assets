@@ -37,8 +37,7 @@ export default function BootSequence({ onComplete }: Props) {
   return (
     <div className={`boot${done ? " done" : ""}`}>
       <div className="boot-logo">
-        <span className="glyph">🍷</span>
-        <b>LIQUID ASSETS</b>
+        Liquid <b>Assets</b>
       </div>
       <div className="boot-lines">
         {LINES.slice(0, shown).map((line, i) => (

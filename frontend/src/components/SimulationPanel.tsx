@@ -50,9 +50,7 @@ export default function SimulationPanel({ mc, onRun }: Props) {
     <div className="panel">
       <div className="panel-head">
         <div>
-          <div className="panel-title">
-            <span className="dot" /> Monte-Carlo Valuation Cone
-          </div>
+          <div className="panel-title">Monte-Carlo Valuation Cone</div>
           <div className="panel-sub">
             Correlated geometric-Brownian-motion simulation of the cellar's value across every held
             region. Shaded cones are 50% and 90% confidence.
@@ -92,18 +90,18 @@ export default function SimulationPanel({ mc, onRun }: Props) {
             Seed <span className="field-val">{seed}</span>
           </label>
           <button className="btn ghost" style={{ padding: "6px 12px" }} onClick={() => setSeed(Math.floor(Math.random() * 99999))}>
-            🎲 reseed
+            Reseed
           </button>
         </div>
         <button className="btn primary" onClick={run} disabled={running}>
-          {running ? "▶ computing…" : "▶ run simulation"}
+          {running ? "Computing…" : "Run simulation"}
         </button>
       </div>
 
       {running && (
         <div style={{ margin: "10px 0 4px" }}>
           <div className="compute">
-            SPOOLING PATH {num(spooled)} / {num(paths)} · CHOLESKY-CORRELATED SHOCKS
+            Simulating path {num(spooled)} of {num(paths)} · correlated Cholesky shocks
           </div>
           <div className="compute-bar">
             <i style={{ width: `${progress * 100}%` }} />

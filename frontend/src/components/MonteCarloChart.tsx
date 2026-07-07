@@ -48,6 +48,7 @@ export default function MonteCarloChart({ mc }: Props) {
       <svg
         viewBox={`0 0 ${W} ${H}`}
         className="chart"
+        style={{ fontSize: 13 }}
         onMouseMove={onMove}
         onMouseLeave={() => setHover(null)}
       >

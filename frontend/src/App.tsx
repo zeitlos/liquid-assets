@@ -110,7 +110,7 @@ export default function App() {
         <div className="app" style={{ paddingTop: 120, textAlign: "center" }}>
           <div className="panel" style={{ maxWidth: 460, margin: "0 auto" }}>
             <div className="panel-title" style={{ justifyContent: "center" }}>
-              <span className="dot" style={{ background: "var(--neg)" }} /> Engine unreachable
+              Engine unreachable
             </div>
             <p style={{ color: "var(--text-dim)", fontSize: 13 }}>{error}</p>
             <p style={{ color: "var(--text-faint)", fontSize: 12 }}>
@@ -125,7 +125,6 @@ export default function App() {
           {/* ---- top bar ---- */}
           <div className="topbar">
             <div className="brand">
-              <span className="brand-glyph">🍷</span>
               <span className="brand-name">
                 Liquid <b>Assets</b>
                 <span className="brand-tm">™</span>
@@ -145,7 +144,7 @@ export default function App() {
               </div>
               <span className="clock">{clock.toLocaleTimeString("en-GB")}</span>
               <button className="btn" onClick={() => setShowModal(true)}>
-                ＋ Add Lot
+                Add lot
               </button>
             </div>
           </div>
@@ -161,7 +160,7 @@ export default function App() {
               <div className="panel-head">
                 <div>
                   <div className="panel-title">
-                    <span className="dot" /> Efficient Frontier
+                    Efficient Frontier
                   </div>
                   <div className="panel-sub">
                     Markowitz mean-variance optimisation across regions. Your cellar plotted against the
@@ -179,11 +178,11 @@ export default function App() {
             <div className="panel-head">
               <div>
                 <div className="panel-title">
-                  <span className="dot" /> Maturity Horizon
+                  Maturity Horizon
                 </div>
                 <div className="panel-sub">
-                  Drinking window and peak-maturity apogee (◆) for every lot, colour-coded by verdict.
-                  The dashed line is today.
+                  Drinking window and peak-maturity point for every lot, coloured by verdict.
+                  The dashed line marks today.
                 </div>
               </div>
               <div className="panel-badge">Drink-Window Model</div>
@@ -197,7 +196,7 @@ export default function App() {
               <div className="panel-head">
                 <div>
                   <div className="panel-title">
-                    <span className="dot" /> Regional Correlation
+                    Regional Correlation
                   </div>
                   <div className="panel-sub">How tightly regional prices move together — the raw input to portfolio risk.</div>
                 </div>
@@ -208,7 +207,7 @@ export default function App() {
               <div className="panel-head">
                 <div>
                   <div className="panel-title">
-                    <span className="dot" /> Allocation by Region
+                    Allocation by Region
                   </div>
                   <div className="panel-sub">
                     Concentration matters — diversification score {(portfolio.diversification_score * 100).toFixed(0)} / 100.
@@ -225,7 +224,7 @@ export default function App() {
             <div className="panel-head">
               <div>
                 <div className="panel-title">
-                  <span className="dot" /> Drink · Hold · Sell — Lot-Level Verdicts
+                  Drink · Hold · Sell — Lot-Level Verdicts
                 </div>
                 <div className="panel-sub">
                   The engine's recommendation per lot. <b>Cost of Cork™</b> is the expected appreciation
@@ -238,7 +237,7 @@ export default function App() {
           </div>
 
           <div className="footer">
-            LIQUID ASSETS™ · ŒNOMETRIC ENGINE v1.0 · A CITIZEN-DEVELOPMENT PROJECT
+            Liquid Assets™ · Œnometric Engine v1.0 · A citizen-development project
             <div className="disc">
               For demonstration only. Not investment advice, and definitely not a substitute for
               actually drinking the wine. Past performance is no guarantee of future vintages.

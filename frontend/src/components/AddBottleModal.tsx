@@ -128,14 +128,14 @@ export default function AddBottleModal({ onClose, onAdded }: Props) {
           </div>
         </div>
 
-        {error && <div className="form-error">⚠ {error}</div>}
+        {error && <div className="form-error">{error}</div>}
 
         <div className="modal-actions">
           <button className="btn ghost" onClick={onClose}>
-            cancel
+            Cancel
           </button>
           <button className="btn primary" onClick={submit} disabled={saving || !form.name || !form.producer}>
-            {saving ? "saving…" : "＋ acquire lot"}
+            {saving ? "Saving…" : "Acquire lot"}
           </button>
         </div>
       </div>

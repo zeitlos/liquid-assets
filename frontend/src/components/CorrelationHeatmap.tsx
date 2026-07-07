@@ -18,7 +18,7 @@ export default function CorrelationHeatmap({ cm }: Props) {
 
   return (
     <div>
-      <svg viewBox={`0 0 ${W} ${H}`} className="chart" onMouseLeave={() => setHover(null)}>
+      <svg viewBox={`0 0 ${W} ${H}`} className="chart" style={{ fontSize: 8 }} onMouseLeave={() => setHover(null)}>
         {/* column labels */}
         {cm.labels.map((l, j) => (
           <text

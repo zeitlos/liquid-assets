@@ -9,6 +9,7 @@ interface Props {
 type SortKey = "value" | "cork" | "drinkability" | "gain";
 
 const slug = (verdict: string) => `v-${verdict.toLowerCase().replace(/\s+/g, "-")}`;
+const pretty = (verdict: string) => verdict.charAt(0) + verdict.slice(1).toLowerCase();
 
 export default function VerdictTable({ bottles }: Props) {
   const [sort, setSort] = useState<SortKey>("value");
@@ -70,7 +71,7 @@ export default function VerdictTable({ bottles }: Props) {
                   </span>
                 </td>
                 <td>
-                  <span className={`verdict-tag ${slug(a.verdict)}`}>{a.verdict}</span>
+                  <span className={`verdict-tag ${slug(a.verdict)}`}>{pretty(a.verdict)}</span>
                 </td>
                 <td>{chf(a.current_value_chf)}</td>
                 <td className={gainUp ? "pos" : "neg"}>{signedPct(a.unrealized_gain_pct)}</td>
