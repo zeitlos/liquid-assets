@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+
+# Node / frontend
+node_modules/
+frontend/dist/
+
+# Runtime data (the file "database" — regenerated/seeded on first run)
+backend/data/
+data/
+
+# OS / editor
+.DS_Store
+*.log
+.vscode/
+.idea/
